@@ -1,0 +1,17 @@
+{
+  "name": "prostor-program",
+  "version": "1.0.0",
+  "description": "Strojově čitelný program Prostoru",
+  "main": "index.js",
+  "repository": "git@github.com:zoul/prostor-program.git",
+  "author": "Tomáš Znamenáček <tomas.znamenacek@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@types/airtable": "^0.5.7",
+    "airtable": "^0.8.1"
+  },
+  "devDependencies": {
+    "@now/node": "^1.5.1"
+  }
+}
