@@ -6,6 +6,7 @@ export interface Event {
   datumPresne: Date | null;
   info: string;
   fb: string | null;
+  vstupenky: string | null;
   promo: boolean;
   zverejnit: boolean;
 }
@@ -27,6 +28,7 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     datumPresne: map((x) => new Date(x), f["Kdy přesně"]),
     info: f["Popis"],
     fb: f["FB událost"],
+    vstupenky: f["Vstupenky"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
   };
