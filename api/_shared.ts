@@ -7,6 +7,7 @@ export interface Event {
   info: string;
   fb: string | null;
   vstupenky: string | null;
+  streaming: boolean;
   promo: boolean;
   zverejnit: boolean;
 }
@@ -29,6 +30,7 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     info: f["Popis"],
     fb: f["FB událost"],
     vstupenky: f["Vstupenky"],
+    streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
   };
