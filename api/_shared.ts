@@ -31,7 +31,7 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     info: f["Popis"],
     fb: f["FB událost"],
     vstupenky: f["Vstupenky"],
-    zanr: map(convertEventType, f["Žánr"]),
+    zanr: map(stripAccents, f["Žánr"]),
     streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
@@ -40,10 +40,6 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
 
 function stripAccents(s: string): string {
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function convertEventType(s: string): string {
-  return s === "divadlo" ? "show" : stripAccents(s);
 }
 
 function map<T, U>(f: (t: T) => U, val: T | null): U | null {
