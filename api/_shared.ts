@@ -7,6 +7,7 @@ export interface Event {
   info: string;
   fb: string | null;
   vstupenky: string | null;
+  zanr: string | null;
   streaming: boolean;
   promo: boolean;
   zverejnit: boolean;
@@ -30,10 +31,15 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     info: f["Popis"],
     fb: f["FB událost"],
     vstupenky: f["Vstupenky"],
+    zanr: map(stripAccents, f["Žánr"]),
     streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
   };
+}
+
+function stripAccents(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function map<T, U>(f: (t: T) => U, val: T | null): U | null {
