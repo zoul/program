@@ -29,18 +29,16 @@ export default async (_: NowRequest, response: NowResponse) => {
 };
 
 function formatDate(d: Date): string {
-  const options = {
+  return d.toLocaleDateString("cs-CZ", {
     weekday: "long",
     month: "long",
     day: "numeric",
-  };
-  return d.toLocaleDateString("cs-CZ", options);
+  });
 }
 
 function formatTime(d: Date): string {
-  const options = {
+  return d.toLocaleTimeString("cs-CZ", {
     hour: "numeric",
     minute: "numeric",
-  };
-  return d.toLocaleTimeString("cs-CZ", options);
+  });
 }
