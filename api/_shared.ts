@@ -13,6 +13,12 @@ export interface Event {
   zverejnit: boolean;
 }
 
+export async function allFutureEvents(apiKey: string): Promise<Event[]> {
+  const table = new Airtable({ apiKey }).base("appKjB9jkVXK4YRGJ")("Program");
+  const records = await table.select({ view: "Budoucí akce" }).all();
+  return records.map(parseEvent).filter((e) => e.zverejnit);
+}
+
 export function parseEvent(record: Airtable.Record<{}>): Event {
   const options = {
     weekday: "long",
