@@ -37,11 +37,15 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     info: f["Popis"],
     fb: f["FB událost"],
     vstupenky: f["Vstupenky"],
-    zanr: map(stripAccents, f["Žánr"]),
+    zanr: map(parseGenre, f["Žánr"]),
     streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
   };
+}
+
+function parseGenre(s: string): string {
+  return stripAccents(s).toLowerCase();
 }
 
 function stripAccents(s: string): string {
