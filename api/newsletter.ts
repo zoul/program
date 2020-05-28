@@ -5,20 +5,30 @@ export default async (_: NowRequest, response: NowResponse) => {
   const apiKey = process.env.AIRTABLE_API_KEY;
   try {
     const events = await allFutureEvents(apiKey);
-    const print = (s: string) => response.write(`${s}\n`);
     response.setHeader("Content-Type", "text/html; charset=UTF-8");
-    response.status(200);
-    for (const event of events.filter((e) => e.datumPresne != null)) {
-      print(viewEventTitle(event));
-      print(viewEventSubtitle(event));
-      print(`<p>${event.info}</p>`);
-      print("\n");
-    }
-    response.end();
+    response.status(200).send(
+      events
+        // TODO: Handle date-less events
+        .filter((e) => e.datumPresne != null)
+        .map(viewEvent)
+        .join("\n")
+    );
   } catch (err) {
     response.status(500).send("AirTable read error.");
   }
 };
+
+function viewEvent(event: Event): string {
+  return [
+    viewEventTitle(event),
+    viewEventSubtitle(event),
+    viewEventInfo(event),
+  ].join("\n");
+}
+
+function viewEventInfo(event: Event): string {
+  return `<p>${event.info}</p>`;
+}
 
 function viewEventTitle(event: Event): string {
   if (event.fb != null) {
