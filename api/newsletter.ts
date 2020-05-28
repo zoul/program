@@ -1,5 +1,5 @@
 import { NowRequest, NowResponse } from "@now/node";
-import { allFutureEvents } from "./_shared";
+import { allFutureEvents, Event } from "./_shared";
 
 export default async (_: NowRequest, response: NowResponse) => {
   const apiKey = process.env.AIRTABLE_API_KEY;
@@ -8,19 +8,9 @@ export default async (_: NowRequest, response: NowResponse) => {
     const print = (s: string) => response.write(`${s}\n`);
     response.setHeader("Content-Type", "text/html; charset=UTF-8");
     response.status(200);
-    for (const event of events) {
-      const date = event.datumPresne;
-      if (date == null) {
-        continue;
-      }
-      if (event.fb != null) {
-        print(`<h2><a href="${event.fb}">${event.jmeno}</a></h2>`);
-      } else {
-        print(`<h2>${event.jmeno}</h2>`);
-      }
-      print(`<p style="text-transform: uppercase">
-        ${formatDate(event.datumPresne)}  ${formatTime(event.datumPresne)}
-      </p>`);
+    for (const event of events.filter((e) => e.datumPresne != null)) {
+      print(viewEventTitle(event));
+      print(viewEventSubtitle(event));
       print(`<p>${event.info}</p>`);
       print("\n");
     }
@@ -30,7 +20,27 @@ export default async (_: NowRequest, response: NowResponse) => {
   }
 };
 
-function formatDate(d: Date): string {
+function viewEventTitle(event: Event): string {
+  if (event.fb != null) {
+    return `<h2><a href="${event.fb}">${event.jmeno}</a></h2>`;
+  } else {
+    return `<h2>${event.jmeno}</h2>`;
+  }
+}
+
+function viewEventSubtitle(event: Event): string {
+  const date = event.datumPresne;
+  var items = [viewDate(date), viewTime(date)];
+  if (event.vstupenky) {
+    items.push(`<a href="${event.vstupenky}">vstupenky</a>`);
+  }
+  return `
+  <p style="text-transform: uppercase">
+    ${items.join("  //  ")}
+  </p>`;
+}
+
+function viewDate(d: Date): string {
   return d.toLocaleDateString("cs-CZ", {
     weekday: "long",
     month: "numeric",
@@ -38,7 +48,7 @@ function formatDate(d: Date): string {
   });
 }
 
-function formatTime(d: Date): string {
+function viewTime(d: Date): string {
   return d.toLocaleTimeString("cs-CZ", {
     hour: "numeric",
     minute: "numeric",
