@@ -6,7 +6,6 @@ export default async (_: NowRequest, response: NowResponse) => {
   try {
     const events = await allFutureEvents(apiKey);
     response.setHeader("Content-Type", "text/plain; charset=UTF-8");
-    response.status(200);
     response.status(200).send(
       events
         .filter((e) => e.datumPresne != null)
