@@ -1,31 +1,37 @@
 import { NowRequest, NowResponse } from "@now/node";
-import { allFutureEvents } from "./_shared";
+import { allFutureEvents, Event } from "./_shared";
 
 export default async (_: NowRequest, response: NowResponse) => {
   const apiKey = process.env.AIRTABLE_API_KEY;
   try {
     const events = await allFutureEvents(apiKey);
-    const print = (s: string) => response.write(`${s}\n`);
     response.setHeader("Content-Type", "text/plain; charset=UTF-8");
     response.status(200);
-    for (const event of events) {
-      const date = event.datumPresne;
-      if (date == null) {
-        continue;
-      }
-      print(formatDate(event.datumPresne));
-      print(formatTime(event.datumPresne));
-      print(event.jmeno);
-      print(event.info);
-      print("\n");
-    }
-    response.end();
+    response.status(200).send(
+      events
+        .filter((e) => e.datumPresne != null)
+        .map(viewEvent)
+        .join("\n")
+    );
   } catch (err) {
     response.status(500).send("AirTable read error.");
   }
 };
 
-function formatDate(d: Date): string {
+function viewEvent(event: Event): string {
+  const items = event.datum
+    ? [event.datum, event.jmeno, event.info, ""]
+    : [
+        viewDate(event.datumPresne),
+        viewTime(event.datumPresne),
+        event.jmeno,
+        event.info,
+        "",
+      ];
+  return items.join("\n");
+}
+
+function viewDate(d: Date): string {
   return d.toLocaleDateString("cs-CZ", {
     weekday: "short",
     month: "numeric",
@@ -33,7 +39,7 @@ function formatDate(d: Date): string {
   });
 }
 
-function formatTime(d: Date): string {
+function viewTime(d: Date): string {
   return d.toLocaleTimeString("cs-CZ", {
     hour: "numeric",
     minute: "numeric",

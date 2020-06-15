@@ -39,8 +39,9 @@ function viewEventTitle(event: Event): string {
 }
 
 function viewEventSubtitle(event: Event): string {
-  const date = event.datumPresne;
-  var items = [viewDate(date), viewTime(date)];
+  var items = event.datum
+    ? [event.datum]
+    : [viewDate(event.datumPresne), viewTime(event.datumPresne)];
   if (event.vstupenky) {
     items.push(`<a href="${event.vstupenky}">vstupenky</a>`);
   }

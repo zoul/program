@@ -2,7 +2,7 @@ import Airtable from "airtable";
 
 export interface Event {
   jmeno: string;
-  datum: string;
+  datum: string | null;
   datumPresne: Date | null;
   info: string;
   fb: string | null;
@@ -20,19 +20,10 @@ export async function allFutureEvents(apiKey: string): Promise<Event[]> {
 }
 
 export function parseEvent(record: Airtable.Record<{}>): Event {
-  const options = {
-    weekday: "long",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  };
-  const formatDate = (s: string) =>
-    new Date(s).toLocaleDateString("cs-CZ", options);
   const f = record.fields;
   return {
     jmeno: f["Název"],
-    datum: f["Kdy"] || formatDate(f["Kdy přesně"]),
+    datum: f["Kdy"],
     datumPresne: map((x) => new Date(x), f["Kdy přesně"]),
     info: f["Popis"],
     fb: f["FB událost"],
