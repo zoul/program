@@ -45,6 +45,15 @@ function viewEventSubtitle(event: Event): string {
   if (event.vstupenky) {
     items.push(`<a href="${event.vstupenky}">vstupenky</a>`);
   }
+  if (event.vstupne) {
+    const format = new Intl.NumberFormat("cs-CZ", {
+      style: "currency",
+      currency: "CZK",
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    }).format;
+    items.push(`Doporučené vstupné ${format(event.vstupne)}`);
+  }
   return `
   <p style="text-transform: uppercase">
     ${items.join("  //  ")}
