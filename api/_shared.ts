@@ -35,7 +35,7 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
-    zruseno: f["Zrušeno"],
+    zruseno: f["Zrušeno"] || false,
   };
 }
 
