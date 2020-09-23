@@ -9,6 +9,7 @@ export default async (_: NowRequest, response: NowResponse) => {
     response.status(200).send(
       events
         .filter((e) => e.datumPresne != null)
+        .filter((e) => !e.zruseno)
         .map(viewEvent)
         .join("\n")
     );

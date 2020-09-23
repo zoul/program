@@ -12,6 +12,7 @@ export interface Event {
   streaming: boolean;
   promo: boolean;
   zverejnit: boolean;
+  zruseno: boolean;
 }
 
 export async function allFutureEvents(apiKey: string): Promise<Event[]> {
@@ -34,6 +35,7 @@ export function parseEvent(record: Airtable.Record<{}>): Event {
     streaming: f["Streaming"],
     promo: f["Promovat"],
     zverejnit: f["Zveřejnit"],
+    zruseno: f["Zrušeno"],
   };
 }
 

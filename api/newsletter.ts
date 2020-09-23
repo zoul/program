@@ -10,6 +10,7 @@ export default async (_: NowRequest, response: NowResponse) => {
       events
         // TODO: Handle date-less events
         .filter((e) => e.datumPresne != null)
+        .filter((e) => !e.zruseno)
         .map(viewEvent)
         .join("\n")
     );
