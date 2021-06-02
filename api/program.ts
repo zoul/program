@@ -20,6 +20,10 @@ export default async (_: NowRequest, response: NowResponse) => {
     }
     const out = JSON.stringify(events, null, 2);
     response.setHeader("Content-Type", "application/json");
+    response.setHeader(
+      "Cache-Control",
+      "max-age=0, s-maxage=60, stale-while-revalidate=86400"
+    );
     response.status(200).send(out);
   } catch (err) {
     response.status(500).send("AirTable read error.");

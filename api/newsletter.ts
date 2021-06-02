@@ -6,10 +6,6 @@ export default async (_: NowRequest, response: NowResponse) => {
   try {
     const events = await allFutureEvents(apiKey);
     response.setHeader("Content-Type", "text/html; charset=UTF-8");
-    response.setHeader(
-      "Cache-Control",
-      "max-age=0, s-maxage=60, stale-while-revalidate=86400"
-    );
     response.status(200).send(
       events
         // TODO: Handle date-less events
