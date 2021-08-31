@@ -1,7 +1,7 @@
-import { NowRequest, NowResponse } from "@now/node";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 import { allFutureEvents } from "./_shared";
 
-export default async (_: NowRequest, response: NowResponse) => {
+export default async (_: VercelRequest, response: VercelResponse) => {
   const apiKey = process.env.NOTION_API_KEY;
   const formatDate = (d: Date) =>
     d.toLocaleDateString("cs-CZ", {
