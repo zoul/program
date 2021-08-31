@@ -8,7 +8,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@notionhq/client": "^0.3.1",
+    "@notionhq/client": "^0.3.1"
   },
   "devDependencies": {
     "@now/node": "^1.5.1"
