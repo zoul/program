@@ -1,5 +1,7 @@
 import { Client } from "@notionhq/client";
 
+process.env.TZ = "Europe/Prague";
+
 import {
   CheckboxPropertyValue,
   NumberPropertyValue,
