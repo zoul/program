@@ -2,7 +2,7 @@ import { NowRequest, NowResponse } from "@now/node";
 import { allFutureEvents, Event } from "./_shared";
 
 export default async (_: NowRequest, response: NowResponse) => {
-  const apiKey = process.env.AIRTABLE_API_KEY;
+  const apiKey = process.env.NOTION_API_KEY;
   try {
     const events = await allFutureEvents(apiKey);
     response.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -14,7 +14,7 @@ export default async (_: NowRequest, response: NowResponse) => {
         .join("\n")
     );
   } catch (err) {
-    response.status(500).send("AirTable read error.");
+    response.status(500).send(err);
   }
 };
 

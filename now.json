@@ -1,5 +1,0 @@
-{
-    "env": {
-        "AIRTABLE_API_KEY": "@airtable-api-key"
-    }
-}

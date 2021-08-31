@@ -2,7 +2,7 @@ import { NowRequest, NowResponse } from "@now/node";
 import { allFutureEvents } from "./_shared";
 
 export default async (_: NowRequest, response: NowResponse) => {
-  const apiKey = process.env.AIRTABLE_API_KEY;
+  const apiKey = process.env.NOTION_API_KEY;
   const formatDate = (d: Date) =>
     d.toLocaleDateString("cs-CZ", {
       weekday: "long",
@@ -26,6 +26,6 @@ export default async (_: NowRequest, response: NowResponse) => {
     );
     response.status(200).send(out);
   } catch (err) {
-    response.status(500).send("AirTable read error.");
+    response.status(500).send(err);
   }
 };
