@@ -59,7 +59,7 @@ export async function allFutureEvents(apiKey: string): Promise<Event[]> {
 function parsePage(page: Page): Event | null {
   const props = (page as EventPage).properties;
 
-  const zverejnit = props["Zveřejnit"]?.checkbox?.valueOf() ?? false;
+  const zverejnit = props["Zveřejnit"].checkbox?.valueOf() ?? false;
   if (zverejnit !== true) {
     return null;
   }
