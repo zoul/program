@@ -23,6 +23,7 @@ interface EventPage extends Page {
     "Zveřejnit"?: CheckboxPropertyValue;
     "Kdy přesně"?: DatePropertyValue;
     "Vstupné"?: NumberPropertyValue;
+    "Doporučené vstupné"?: NumberPropertyValue;
     "Žánr"?: SelectPropertyValue;
     "Promovat"?: CheckboxPropertyValue;
     "Zrušeno"?: CheckboxPropertyValue;
@@ -37,6 +38,7 @@ export interface Event {
   fb: string | null;
   vstupenky: string | null;
   vstupne: number | null;
+  doporuceneVstupne: number | null;
   zanr: string | null;
   streaming: boolean;
   promo: boolean;
@@ -73,6 +75,7 @@ function parsePage(page: Page): Event | null {
   const fb = parseURL(props["FB událost"]?.url);
   const vstupenky = parseURL(props["Vstupenky"]?.url);
   const vstupne = props["Vstupné"]?.number;
+  const doporuceneVstupne = props["Doporučené vstupné"]?.number;
   const zanr = map(parseGenre, props["Žánr"]?.select?.name);
   const promo = props["Promovat"]?.checkbox?.valueOf() ?? false;
   const zruseno = props["Zrušeno"]?.checkbox?.valueOf() ?? false;
@@ -89,6 +92,7 @@ function parsePage(page: Page): Event | null {
     streaming,
     vstupenky,
     vstupne,
+    doporuceneVstupne,
     promo,
     zverejnit,
     zruseno,
