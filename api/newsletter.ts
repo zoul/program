@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import { allFutureEvents, Event } from "./_shared";
 
 export default async (_: VercelRequest, response: VercelResponse) => {
-  const apiKey = process.env.NOTION_API_KEY;
+  const apiKey = process.env.NOTION_API_KEY || "";
   try {
     const events = await allFutureEvents(apiKey);
     response.setHeader("Content-Type", "text/html; charset=UTF-8");
@@ -42,7 +42,7 @@ function viewEventTitle(event: Event): string {
 function viewEventSubtitle(event: Event): string {
   var items = event.datum
     ? [event.datum]
-    : [viewDate(event.datumPresne), viewTime(event.datumPresne)];
+    : [viewDate(event.datumPresne!), viewTime(event.datumPresne!)];
   if (event.vstupenky) {
     items.push(`<a href="${event.vstupenky}">vstupenky</a>`);
   }

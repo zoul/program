@@ -2,7 +2,7 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import { allFutureEvents, Event } from "./_shared";
 
 export default async (_: VercelRequest, response: VercelResponse) => {
-  const apiKey = process.env.NOTION_API_KEY;
+  const apiKey = process.env.NOTION_API_KEY || "";
   try {
     const events = await allFutureEvents(apiKey);
     response.setHeader("Content-Type", "text/plain; charset=UTF-8");
@@ -42,7 +42,7 @@ function viewTimeLine(event: Event): string {
   if (event.datum) {
     return "Prostor";
   } else {
-    return `Prostor ${viewTime(event.datumPresne)}`;
+    return `Prostor ${viewTime(event.datumPresne!)}`;
   }
 }
 
