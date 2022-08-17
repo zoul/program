@@ -55,9 +55,9 @@ export async function allFutureEvents(apiKey: string): Promise<Event[]> {
   });
   return dbResponse.results
     .map(parsePage)
-    .filter((b) => b != null)
+    .filter(notEmpty)
     .filter((e) => e.datumPresne != null && e.datumPresne >= new Date())
-    .sort((a, b) => +a.datumPresne - +b.datumPresne);
+    .sort((a, b) => +a.datumPresne! - +b.datumPresne!);
 }
 
 function parsePage(page: Page): Event | null {
@@ -108,4 +108,8 @@ function stripAccents(s: string): string {
 
 function map<T, U>(f: (t: T) => U, val: T | null): U | null {
   return val != null ? f(val) : null;
+}
+
+function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
+  return value !== null && value !== undefined;
 }
