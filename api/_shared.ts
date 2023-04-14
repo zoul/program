@@ -118,11 +118,11 @@ const categorizeDate = (d: Date) => {
   if (diff < 0) {
     return "proběhlo";
   } else if (diff < 30) {
-    return "nejbližší akce";
+    return "nejbližší měsíc";
   } else if (diff < 60) {
-    return "chystáme";
+    return "na obzoru";
   } else {
-    return "těšte se";
+    return "připravujeme";
   }
 };
 
