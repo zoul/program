@@ -44,6 +44,7 @@ export interface Event {
   jmeno: string | null;
   datum: string | null;
   datumPresne: Date | null;
+  sekce: string | null;
   info: string | null;
   fb: string | null;
   vstupenky: string | null;
@@ -76,14 +77,12 @@ export async function allFutureEvents(apiKey: string): Promise<Event[]> {
 }
 
 function unwrapEventPage(page: EventPage): Event {
-  const stripAccents = (s: string) =>
-    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  const normalizeGenre = (value: string) => stripAccents(value).toLowerCase();
   const p = page.props;
   return {
     jmeno: p.jmeno.value.at(0)?.plainText || null,
     datum: p.datum?.value.at(0)?.plainText || null,
     datumPresne: p.datumPresne?.date?.start || null,
+    sekce: map(categorizeDate, p.datumPresne?.date?.start || null),
     info: p.info.value.at(0)?.plainText || null,
     fb: p.fb.value,
     zanr: map(normalizeGenre, p.zanr.select?.name || null),
@@ -96,6 +95,30 @@ function unwrapEventPage(page: EventPage): Event {
     zruseno: p.zruseno.value,
   };
 }
+
+//
+// Helpers
+//
+
+const stripAccents = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const normalizeGenre = (s: string) => stripAccents(s).toLowerCase();
+
+const daysBetweenDays = (a: Date, b: Date) => (+a - +b) / (1000 * 60 * 60 * 24);
+
+const categorizeDate = (d: Date) => {
+  const diff = daysBetweenDays(d, new Date());
+  if (diff < 0) {
+    return "proběhlo";
+  } else if (diff < 30) {
+    return "nejbližší akce";
+  } else if (diff < 60) {
+    return "chystáme";
+  } else {
+    return "těšte se";
+  }
+};
 
 function map<T, U>(f: (t: T) => U, val: T | null): U | null {
   return val != null ? f(val) : null;
