@@ -41,10 +41,10 @@ const decodeEventPage = record({
 });
 
 export interface Event {
-  jmeno: string;
+  jmeno: string | null;
   datum: string | null;
   datumPresne: Date | null;
-  info: string;
+  info: string | null;
   fb: string | null;
   vstupenky: string | null;
   vstupne: number | null;
@@ -81,10 +81,10 @@ function unwrapEventPage(page: EventPage): Event {
   const normalizeGenre = (value: string) => stripAccents(value).toLowerCase();
   const p = page.props;
   return {
-    jmeno: p.jmeno.value[0]?.plainText,
-    datum: p.datum?.value[0]?.plainText || null,
+    jmeno: p.jmeno.value.at(0)?.plainText || null,
+    datum: p.datum?.value.at(0)?.plainText || null,
     datumPresne: p.datumPresne?.date?.start || null,
-    info: p.info.value[0]?.plainText,
+    info: p.info.value.at(0)?.plainText || null,
     fb: p.fb.value,
     zanr: map(normalizeGenre, p.zanr.select?.name || null),
     streaming: false,
