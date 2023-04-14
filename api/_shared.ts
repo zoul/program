@@ -71,9 +71,15 @@ export async function allFutureEvents(apiKey: string): Promise<Event[]> {
     .then((response) => response.results)
     .then((pages) => pages.map(unwrapEventPage));
 
-  return events
-    .filter((e) => e.datumPresne != null && e.datumPresne >= new Date())
-    .sort((a, b) => +a.datumPresne! - +b.datumPresne!);
+  return (
+    events
+      // Only published events
+      .filter((e) => e.zverejnit)
+      // Only future events
+      .filter((e) => e.datumPresne != null && e.datumPresne >= new Date())
+      // Sort by date
+      .sort((a, b) => +a.datumPresne! - +b.datumPresne!)
+  );
 }
 
 function unwrapEventPage(page: EventPage): Event {
