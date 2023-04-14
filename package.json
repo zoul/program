@@ -8,10 +8,14 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "@notionhq/client": "^2.1.1",
-    "@vercel/node": "^1.12.1"
+    "@notionhq/client": "^2.2.4",
+    "@vercel/node": "^2.10.3",
+    "typescript-json-decoder": "^1.0.11"
   },
   "prettier": {
     "quoteProps": "consistent"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
   }
 }

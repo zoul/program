@@ -13,7 +13,7 @@ export default async (_: VercelRequest, response: VercelResponse) => {
     });
   try {
     const events = await allFutureEvents(apiKey);
-    for (var event of events) {
+    for (const event of events) {
       if (event.datum == null && event.datumPresne != null) {
         event.datum = formatDate(event.datumPresne);
       }
@@ -25,7 +25,8 @@ export default async (_: VercelRequest, response: VercelResponse) => {
       "max-age=0, s-maxage=60, stale-while-revalidate=86400"
     );
     response.status(200).send(out);
-  } catch (err) {
-    response.status(500).send(err);
+  } catch (e) {
+    console.error(e);
+    response.status(500).send(e);
   }
 };

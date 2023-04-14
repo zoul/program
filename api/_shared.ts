@@ -1,34 +1,44 @@
 import { Client } from "@notionhq/client";
+import {
+  array,
+  decodeType,
+  field,
+  literal,
+  record,
+} from "typescript-json-decoder";
+import {
+  checkboxProp,
+  dateProp,
+  numberProp,
+  richTextProp,
+  selectProp,
+  titleProp,
+  urlProp,
+} from "./_notion";
 
 process.env.TZ = "Europe/Prague";
 
-import {
-  CheckboxPropertyValue,
-  NumberPropertyValue,
-  Page,
-  DatePropertyValue,
-  RichTextPropertyValue,
-  SelectPropertyValue,
-  TitlePropertyValue,
-  URLPropertyValue,
-} from "@notionhq/client/build/src/api-types";
-
-interface EventPage extends Page {
-  properties: {
-    "Název"?: TitlePropertyValue;
-    "Popis"?: RichTextPropertyValue;
-    "Kdy"?: RichTextPropertyValue;
-    "FB událost"?: URLPropertyValue;
-    "Vstupenky"?: URLPropertyValue;
-    "Zveřejnit"?: CheckboxPropertyValue;
-    "Kdy přesně"?: DatePropertyValue;
-    "Vstupné"?: NumberPropertyValue;
-    "Doporučené vstupné"?: NumberPropertyValue;
-    "Žánr"?: SelectPropertyValue;
-    "Promovat"?: CheckboxPropertyValue;
-    "Zrušeno"?: CheckboxPropertyValue;
-  };
-}
+type EventPage = decodeType<typeof decodeEventPage>;
+const decodeEventPage = record({
+  object: literal("page"),
+  props: field(
+    "properties",
+    record({
+      jmeno: field("Název", titleProp),
+      datum: field("Kdy", richTextProp),
+      datumPresne: field("Kdy přesně", dateProp),
+      info: field("Popis", richTextProp),
+      fb: field("FB událost", urlProp),
+      vstupenky: field("Vstupenky", urlProp),
+      vstupne: field("Vstupné", numberProp),
+      doporuceneVstupne: field("Doporučené vstupné", numberProp),
+      zanr: field("Žánr", selectProp),
+      promo: field("Promovat", checkboxProp),
+      zruseno: field("Zrušeno", checkboxProp),
+      zverejnit: field("Zveřejnit", checkboxProp),
+    })
+  ),
+});
 
 export interface Event {
   jmeno: string;
@@ -40,76 +50,53 @@ export interface Event {
   vstupne: number | null;
   doporuceneVstupne: number | null;
   zanr: string | null;
-  streaming: boolean;
+  streaming: boolean | null;
   promo: boolean;
   zverejnit: boolean;
   zruseno: boolean;
 }
 
 export async function allFutureEvents(apiKey: string): Promise<Event[]> {
-  const notion = new Client({ auth: apiKey });
-  const databaseId = "030ee6a0cbbf40bc9b5cbae4001f0d8e";
-  const dbResponse = await notion.databases.query({
-    database_id: databaseId,
-    sorts: [{ property: "Kdy přesně", direction: "descending" }],
+  const decodeQueryResponse = record({
+    object: literal("list"),
+    results: array(decodeEventPage),
   });
-  return dbResponse.results
-    .map(parsePage)
-    .filter(notEmpty)
+  const notion = new Client({ auth: apiKey });
+  const events = await notion.databases
+    .query({
+      database_id: "030ee6a0cbbf40bc9b5cbae4001f0d8e",
+    })
+    .then(decodeQueryResponse)
+    .then((response) => response.results)
+    .then((pages) => pages.map(unwrapEventPage));
+
+  return events
     .filter((e) => e.datumPresne != null && e.datumPresne >= new Date())
     .sort((a, b) => +a.datumPresne! - +b.datumPresne!);
 }
 
-function parsePage(page: Page): Event | null {
-  const props = (page as EventPage).properties;
-
-  const zverejnit = props["Zveřejnit"].checkbox?.valueOf() ?? false;
-  if (zverejnit !== true) {
-    return null;
-  }
-
-  const jmeno = props["Název"]?.title[0]?.plain_text;
-  const info = props["Popis"]?.rich_text[0]?.plain_text;
-  const datumPresne = new Date(props["Kdy přesně"]?.date.start);
-  const datum = props["Kdy"]?.rich_text[0]?.plain_text;
-  const fb = parseURL(props["FB událost"]?.url);
-  const vstupenky = parseURL(props["Vstupenky"]?.url);
-  const vstupne = props["Vstupné"]?.number;
-  const doporuceneVstupne = props["Doporučené vstupné"]?.number;
-  const zanr = map(parseGenre, props["Žánr"]?.select?.name);
-  const promo = props["Promovat"]?.checkbox?.valueOf() ?? false;
-  const zruseno = props["Zrušeno"]?.checkbox?.valueOf() ?? false;
-
-  const streaming = false;
-
+function unwrapEventPage(page: EventPage): Event {
+  const stripAccents = (s: string) =>
+    s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const normalizeGenre = (value: string) => stripAccents(value).toLowerCase();
+  const p = page.props;
   return {
-    jmeno,
-    datum,
-    datumPresne,
-    info,
-    fb,
-    zanr,
-    streaming,
-    vstupenky,
-    vstupne,
-    doporuceneVstupne,
-    promo,
-    zverejnit,
-    zruseno,
+    jmeno: p.jmeno.value[0]?.plainText,
+    datum: p.datum?.value[0]?.plainText || null,
+    datumPresne: p.datumPresne?.date?.start || null,
+    info: p.info.value[0]?.plainText,
+    fb: p.fb.value,
+    zanr: map(normalizeGenre, p.zanr.select?.name || null),
+    streaming: false,
+    vstupenky: p.vstupenky.value,
+    vstupne: p.vstupne.value,
+    doporuceneVstupne: p.doporuceneVstupne?.value || null,
+    promo: p.promo.value,
+    zverejnit: p.zverejnit.value,
+    zruseno: p.zruseno.value,
   };
-}
-
-const parseGenre = (s: string) => stripAccents(s).toLowerCase();
-const parseURL = (s: string) => (s === "" ? undefined : s);
-
-function stripAccents(s: string): string {
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function map<T, U>(f: (t: T) => U, val: T | null): U | null {
   return val != null ? f(val) : null;
-}
-
-function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {
-  return value !== null && value !== undefined;
 }
