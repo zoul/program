@@ -29,6 +29,7 @@ const decodeEventPage = record({
       datumPresne: field("Kdy přesně", dateProp),
       info: field("Popis", richTextProp),
       fb: field("FB událost", urlProp),
+      odkaz: field("Odkaz na web", urlProp),
       vstupenky: field("Vstupenky", urlProp),
       vstupne: field("Vstupné", numberProp),
       doporuceneVstupne: field("Doporučené vstupné", numberProp),
@@ -47,6 +48,7 @@ export interface Event {
   sekce: string | null;
   info: string | null;
   fb: string | null;
+  odkaz: string | null;
   vstupenky: string | null;
   vstupne: number | null;
   doporuceneVstupne: number | null;
@@ -91,6 +93,7 @@ function unwrapEventPage(page: EventPage): Event {
     sekce: map(categorizeDate, p.datumPresne?.date?.start || null),
     info: p.info.value.at(0)?.plainText || null,
     fb: p.fb.value,
+    odkaz: p.odkaz.value,
     zanr: map(normalizeGenre, p.zanr.select?.name || null),
     streaming: false,
     vstupenky: p.vstupenky.value,
